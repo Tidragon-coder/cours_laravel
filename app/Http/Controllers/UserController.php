@@ -62,9 +62,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(Request $request)
     {
-        return response()->json($user);
+        return response()->json($request->user(), 200);
     }
 
 
@@ -118,12 +118,48 @@ class UserController extends Controller
         return response()->json(['message'=> 'User deleted', 200]);
     }
 
-    // public function login($request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required|email',
-    //         'password' => 'required',
-    //     ]);
-    // }
+    public function login(Request $request)
+    {
+        try {
+            
+ 
+            $validatedData = $request->validate([
+                'email' => 'string|max:255' ,
+                'password' => 'string|min:4',
+            ]);
+ 
+            $user = User::where('email', $validatedData['email'])
+            ->first();
+
+            if ($user && password_verify($validatedData['password'], $user->password)) {
+                // Générer un token ou une session pour l'utilisateur (optionnel)
+                // Par exemple, utiliser Laravel Sanctum ou Passport pour les tokens JWT
+                
+                $token = $user->createToken('auth_token')->plainTextToken;
+
+                return response()->json([
+                    'message'=> 'Login successfully',
+                    'user'=> $user,
+                    'token'=> $token
+                ],201);;
+            } else {
+                return response()->json(['message' => 'Invalid credentials'], 401);
+            }
+        } 
+        catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => 'Validation error', 'errors' => $e->errors()], 422);
+        } 
+
+        catch (\Exception $e) {
+            return response()->json(['message' => 'Error creating user : '. $e->getMessage()], 500);
+        }
+    }
+
+
+
+        public function logout(Request $request) {
+            $request->user()->tokens()->delete();
+            return response()->json(['message' => 'Logout successfully'], 200);
+        }
 
 }
