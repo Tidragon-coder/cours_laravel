@@ -16,11 +16,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/users', [UserController::class, 'index']);
-Route::post('/users/register', [UserController::class, 'register']);
+Route::post('/users/register', [UserController::class, 'register'])->name('api.register');
 Route::put('/users/{id}', [UserController::class, 'update']);
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
-Route::post('/users/login', [UserController::class, 'login']);
-Route::get('/users/me', [UserController::class, 'show'])->middleware('auth:sanctum');
+Route::post('/users/login', [UserController::class, 'login'])->name('api.login');
+Route::get('/users/me', [UserController::class, 'me'])->middleware('auth:sanctum')->name('api.me');
 Route::post('/users/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 
 
