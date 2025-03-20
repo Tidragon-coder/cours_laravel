@@ -236,7 +236,7 @@ class UserController extends Controller
 
     public function edit()
     {
-    return view('auth.edit', ['user' => auth()->user()]);
+     return view('auth.edit', ['user' => auth()->user()]);
     }
 
 }

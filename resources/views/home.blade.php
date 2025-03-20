@@ -155,8 +155,12 @@
         <h1>Bienvenue sur Delta</h1>
         <div class="buttons">
             @if (Route::has('login'))
-                @auth
+                @auth 
+                    <a href="{{ url('/posts-feed') }}">Access a mon feed</a> <br>
+
                     <a href="{{ url('/profile') }}">Mon profil</a>
+                    <a href="{{ url('/posts/create') }}">Créer un post</a>
+                    
                 @else
                     <a href="{{ route('login') }}">Se connecter</a>
                     @if (Route::has('register'))
