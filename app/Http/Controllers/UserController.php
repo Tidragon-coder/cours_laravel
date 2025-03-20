@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
  
 class UserController extends Controller
 {
@@ -194,14 +195,50 @@ class UserController extends Controller
         }
     }
  
-    public function profile(Request $request) {
+    public function profile(Request $request) 
+    {
         $user = auth()->user();
         if(!$user) {
             return redirect()->route('login')->with('error', 'You are not logged in');
         }
         return view('auth.profile', compact('user'));
     }
+
    
+    public function uploadProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Stocke l’image dans storage/app/public/profile_pictures/
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+        // Stocke seulement le chemin relatif (ex: "profile_pictures/image.jpg")
+        auth()->user()->update(['profile_picture' => $path]);
+
+        return back()->with('success', 'Photo de profil mise à jour !');
+    }
+
+    public function profileupdate(Request $request)
+    {
+        $request->validate([
+            'username' => 'string|max:255',
+            'email' => 'email|max:255|unique:users,email,' . auth()->id(),
+            'bio' => 'nullable|string|max:500',
+        ]);
+
+        auth()->user()->update($request->only(['username', 'email', 'bio']));
+
+        return redirect()->route('profile')->with('success', 'Profil mis à jour !');
+    }
+
+
+    public function edit()
+    {
+     return view('auth.edit', ['user' => auth()->user()]);
+    }
+
 }
  
  

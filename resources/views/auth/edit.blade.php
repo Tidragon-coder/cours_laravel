@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Connexion</title>
+    <title>Modifier le Profil</title>
     <style>
         :root {
             --bg-color: #121212;
@@ -41,7 +41,7 @@
         
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             background: var(--card-bg);
             padding: 35px 30px;
             border-radius: var(--border-radius);
@@ -76,6 +76,29 @@
             font-weight: 600;
         }
         
+        .edit-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .edit-icon {
+            width: 70px;
+            height: 70px;
+            background-color: rgba(52, 152, 219, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .edit-icon svg {
+            width: 35px;
+            height: 35px;
+            fill: var(--secondary);
+        }
+        
         .form-group {
             margin-bottom: 20px;
             text-align: left;
@@ -89,7 +112,15 @@
             position: relative;
         }
         
-        input {
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        input, textarea {
             width: 100%;
             padding: 12px 15px;
             background-color: #2a2a2a;
@@ -97,22 +128,24 @@
             border-radius: var(--border-radius);
             color: var(--text-primary);
             font-size: 15px;
+            font-family: inherit;
             transition: all 0.3s ease;
+            resize: none;
         }
         
-        input:focus {
+        textarea {
+            min-height: 100px;
+        }
+        
+        input:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(142, 68, 173, 0.2);
-        }
-        
-        input::placeholder {
-            color: var(--text-muted);
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
         
         .btn {
             padding: 12px 20px;
-            background-color: var(--primary);
+            background-color: var(--secondary);
             color: white;
             text-decoration: none;
             border-radius: var(--border-radius);
@@ -126,50 +159,23 @@
         }
         
         .btn:hover {
-            background-color: var(--primary-hover);
+            background-color: #2980b9;
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         
-        .register-link {
+        .back-link {
+            display: inline-block;
             margin-top: 25px;
             color: var(--text-secondary);
-            font-size: 15px;
-        }
-        
-        .register-link a {
-            color: var(--secondary);
             text-decoration: none;
-            font-weight: 600;
+            font-size: 15px;
             transition: color 0.3s;
         }
         
-        .register-link a:hover {
-            color: var(--accent);
+        .back-link:hover {
+            color: var(--text-primary);
             text-decoration: underline;
-        }
-        
-        .form-header {
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: center;
-        }
-        
-        .login-icon {
-            width: 70px;
-            height: 70px;
-            background-color: rgba(142, 68, 173, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-        
-        .login-icon svg {
-            width: 35px;
-            height: 35px;
-            fill: var(--primary);
         }
         
         @media (max-width: 480px) {
@@ -185,33 +191,39 @@
 </head>
 <body>
     <div class="container">
-        <div class="form-header">
-            <div class="login-icon">
+        <div class="edit-header">
+            <div class="edit-icon">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                 </svg>
             </div>
         </div>
         
-        <h1>Connexion</h1>
+        <h1>Modifier mon profil</h1>
         
-        <form method="POST" action="{{route('api.login')}}">
+        <form action="{{ route('auth.update') }}" method="POST">
             @csrf
             <div class="form-group">
                 <div class="input-group">
-                    <input type="email" name="email" placeholder="Adresse e-mail" required>
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" name="username" id="username" value="{{ old('username', auth()->user()->username) }}">
                 </div>
+                
                 <div class="input-group">
-                    <input type="password" name="password" placeholder="Mot de passe" required>
+                    <label for="email">Adresse e-mail</label>
+                    <input type="email" name="email" id="email" value="{{ old('email', auth()->user()->email) }}">
+                </div>
+                
+                <div class="input-group">
+                    <label for="bio">Bio</label>
+                    <textarea name="bio" id="bio">{{ old('bio', auth()->user()->bio) }}</textarea>
                 </div>
             </div>
             
-            <button type="submit" class="btn">Se connecter</button>
+            <button type="submit" class="btn">Sauvegarder les modifications</button>
         </form>
         
-        <div class="register-link">
-            Vous n'avez pas de compte ? <a href="/register">S'inscrire</a>
-        </div>
+        <a href="{{ route('profile') }}" class="back-link">Retour au profil</a>
     </div>
 </body>
 </html>
